@@ -13,7 +13,7 @@ class RedditPost:
         self.debug = debug
 
         try:
-            with open(f"{self.subreddit}_last_post.txt", 'r') as save_file:
+            with open(f"listings/{self.subreddit}_listing.txt", 'r') as save_file:
                 self.last_post = save_file.readlines()
         except FileNotFoundError:
             self.last_post = []
@@ -23,7 +23,7 @@ class RedditPost:
 
     def load_listing(self) -> list:
         try:
-            with open(f"{self.subreddit}_last_post.txt", 'r') as save_file:
+            with open(f"listings/{self.subreddit}_listing.txt", 'r') as save_file:
                 return save_file.read().splitlines()
         except FileNotFoundError:
             return []
@@ -64,7 +64,7 @@ class RedditPost:
 
         if len(listing[:-0:-1]) > 0:
             self.last_post = post["data"]["name"]
-            with open(f"{self.subreddit}_last_post.txt", 'w') as save_file:
+            with open(f"listings/{self.subreddit}_listing.txt", 'w') as save_file:
                 save_file.write(self.last_post)
     
     async def send_save_embeds(self) -> None:
@@ -78,7 +78,7 @@ class RedditPost:
             print(self)
             print(f"\n Length: {len(listing)}\n Results: {listing_names}\n")
 
-        with open(f"{self.subreddit}_last_post.txt", 'w') as save_file:
+        with open(f"listings/{self.subreddit}_listing.txt", 'w') as save_file:
             for post in listing[::-1]:
                 if post["data"]["stickied"] == False:
                     save_file.write(post["data"]["name"] + '\n')
