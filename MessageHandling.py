@@ -5,18 +5,23 @@ import datetime
 
 import ctx_commands
 
-from bot_token import TOKEN
 from RedditPosting import RedditPost
 from CommandHandler import ContextHandler, Context
 
+DEBUG = False
+
 
 class BaguetteClient(discord.Client):
+    # self.postings = []
+
+    def __init__(self, *, loop=None, **options):
+        self.postings = []
+        super().__init__(loop=loop, options=options)
+
+
     async def on_ready(self):
-        await client.change_presence(activity=discord.Game("with you"))
         self.main_handler = ContextHandler('!')
         print("Baguette Bot is connected", datetime.datetime.now())
-
-        self.annonces_curb = self.get_channel(332667720523055114, 529655641288212492)
 
     def get_guild(self, guild_id):
         for guild in self.guilds:
@@ -40,25 +45,28 @@ class BaguetteClient(discord.Client):
     async def reddit_posting(self):
         await self.wait_until_ready()
 
-        uci_channel = self.get_channel(guild_id=660584553513222144,
-                                       channel_id=730819065245073480)           # UCI BTS
-        uci = RedditPost(uci_channel, "UCI", "new")
-
-        animemes_channel = self.get_channel(guild_id=660584553513222144,
-                                            channel_id=730980241065115689)      # Animemes
-        animemes = RedditPost(animemes_channel, "Animemes")
-        goodanimemes = RedditPost(animemes_channel, "goodanimemes")
+        # uci_ch = self.get_channel(guild_id=660584553513222144, channel_id=730819065245073480)     # unused
+        # art_ch = self.get_channel(guild_id=660584553513222144, channel_id=730070494291820555)     # unused
+        space_ch = self.get_channel(guild_id=660584553513222144, channel_id=874633283122651147)
+        animemes_ch = self.get_channel(guild_id=660584553513222144, channel_id=730980241065115689)
+        cars_ch = self.get_channel(guild_id=660584553513222144, channel_id=965501399553151066)
+        
+        # postings.append(RedditPost(uci_ch, "UCI", "new"))
+        self.postings.append(RedditPost(space_ch, "Astronomy"))
+        self.postings.append(RedditPost(animemes_ch, "goodanimemes"))
+        self.postings.append(RedditPost(cars_ch, "Miata"))
 
         while not self.is_closed():
-            print("Retrieving posts at ", datetime.datetime.now())
-            await uci.send_save_embeds()
-            await animemes.send_save_embeds()
-            await goodanimemes.send_save_embeds()
+            if DEBUG:
+                print("Retrieving posts at ", datetime.datetime.now())
 
+            for post in self.postings:
+                await post.send_save_embeds()
             await asyncio.sleep(4200)
 
 if __name__ == "__main__":
+    with open("token.txt", 'r') as f:
+        token = f.readline()
     client = BaguetteClient(max_messages=None)
     client.loop.create_task(client.reddit_posting())
-    client.run(TOKEN)
-    print("It has somehow ended", datetime.datetime.now())
+    client.run(token)
