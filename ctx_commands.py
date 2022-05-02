@@ -1,7 +1,9 @@
 """Module that groups all functions that are interpreted as commands by the CommandHandler"""
 
 import discord
-import random, inspect
+import random
+
+BOT_OWNER_ID = 153134879717064704
 
 
 async def ping(ctx):
@@ -19,21 +21,18 @@ async def avatar(ctx, name=''):
                 await ctx.channel.send(member.avatar_url)
 
 
-def _is_mentionned(mention):
+def _has_mention(mention):
     def inner(message):
-        return f"<@!{message.author.id}>" == mention if mention != None else True
+        return f"<@{message.author.id}>" == mention if mention != None else True
     return inner
 
 
-async def purge(ctx, mention: str, num=None):
-    if num == None:
-        num = int(mention)
-        mention = None
-    else:
-        num = int(num)
+async def purge(ctx, num:int, mention=None):
+    # TODO: limit != number of messages that will get deleted. Make way to guarantee the number of messages deleted
     try:
+        num = int(num)
         if "Baguette" in [role.name for role in ctx.author.roles]:
-            await ctx.channel.purge(limit=num + 1, check=_is_mentionned(mention))
+            await ctx.channel.purge(limit=num + 1, check=_has_mention(mention))
     except discord.Forbidden:
         await ctx.send("Bot does not have permission to manage messages.")
 
@@ -67,6 +66,6 @@ async def unmute(ctx):
 
 
 async def die(ctx):
-    if ctx.author.id == 153134879717064704:
+    if ctx.author.id == BOT_OWNER_ID:
         await ctx.send("Time to sleep")
-        raise KeyboardInterrupt
+        exit()
