@@ -42,10 +42,12 @@ async def coinflip(ctx):
 
 
 async def choice(ctx, *args):
+    """Chooses one word among a list of given arguments (whitespace separated)"""
     await ctx.send(random.choice(args))
 
 
 async def supermute(ctx):
+    """Mutes every user currently in a voice channel"""
     if "Baguette" in [role.name for role in ctx.author.roles]:
         for member in ctx.guild.members:
             try:
@@ -56,6 +58,7 @@ async def supermute(ctx):
 
 
 async def unmute(ctx):
+    """Unmutes every user currently in a voice channel"""
     if "Baguette" in [role.name for role in ctx.author.roles]:
         for member in ctx.guild.members:
             try:
@@ -66,6 +69,7 @@ async def unmute(ctx):
 
 
 async def die(ctx):
+    """Terminates the bot if command sent by bot owner"""
     if ctx.author.id == BOT_OWNER_ID:
         await ctx.send("Time to sleep")
         exit()
